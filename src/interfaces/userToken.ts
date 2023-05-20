@@ -1,0 +1,3 @@
+interface UserToken {
+    token: string
+}
