@@ -15,7 +15,6 @@ export default function Breadcrumb({ pages }: { pages: NavLinkI[] }) {
         </li>
         { pages.map((page) => {
           const isActive = page.link === pathname;
-          console.log(page);
           return (
             <li className={"breadcrumb-item fw-bold" + (isActive ? ' active' : '') } key={page.name}>
               <Link to={page.link} className={"link-dark" + (isActive ? '' : ' text-decoration-none opacity-75')}>{page.name}</Link>
