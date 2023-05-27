@@ -42,15 +42,16 @@ const Home = () => {
 
   const changePage = (page_num: number) => {
     const data = JSON.parse(JSON.stringify(pedidosData));
-    const perPage = 3;
+    const perPage = 10;
     const fromPage = 1;
     const toPage = Math.floor((data.length - 1) / perPage);
+    const random_num = Math.round(Math.random() * 20);
     console.log(data);
-    console.log((page_num - 1) * perPage, perPage);
+    console.log(random_num, random_num + perPage);
     console.log(data.slice((page_num - 1) * perPage, perPage));
     setPaginationPedido({
       from: fromPage,
-      data: data.slice((page_num - 1) * perPage, perPage),
+      data: data.slice(random_num, random_num + perPage),
       to: toPage,
       per_page: perPage,
       current: page_num,
@@ -74,7 +75,6 @@ const Home = () => {
         <Breadcrumb pages={pages} />
         <div></div>
         <div className='overflow-auto'>
-        {JSON.stringify(paginationPedido)}
 
           <table className="table table-bordered">
             <thead className='table-dark'>
@@ -108,7 +108,7 @@ const Home = () => {
               })}
             </tbody>
           </table>
-          <div className='d-flex justify-content-end align-items-center'>
+          <div className='d-flex justify-content-center align-items-center'>
             <div className='btn-group'>
               <button className='btn btn-secondary' onClick={ () => { changePage(paginationPedido.prev ||  1) }} disabled={ !paginationPedido.prev }>
                 <FontAwesomeIcon icon={['fas', 'chevron-left']} />
