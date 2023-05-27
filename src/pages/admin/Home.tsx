@@ -101,8 +101,16 @@ const Home = () => {
                     <td className='fw-bold'>{pedido.user_two}</td>
                     <td>{pedido.description}</td>
                     <td className='text-center'>{<StatusPedido status={pedido.status} />}</td>
-                    <td></td>
-                    <td></td>
+                    <td className='text-center'>
+                      <button className='btn btn-warning'>
+                        Realizar
+                      </button>
+                    </td>
+                    <td>
+                      <button className='btn btn-primary'>
+                        Mensaje
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
