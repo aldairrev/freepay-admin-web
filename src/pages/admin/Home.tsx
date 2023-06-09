@@ -8,11 +8,12 @@ import pedidosData from '../../data/pedidos.json';
 import StatusPedido from '../../components/Pedido/StatusPedido.tsx';
 import PaginationPedido from '../../interfaces/Pagination/PaginationPedido.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 
 const Home = () => {
   const navigate = useNavigate();
   const { token, setToken } = useToken();
-  const [paginationPedido, setPaginationPedido]: [paginationPedido: PaginationPedido, setPaginationPedido: any] = useState({
+  const [paginationPedido, setPaginationPedido]: [paginationPedido: any, setPaginationPedido: any] = useState({
     data: [],
     from: 1,
     per_page: 10,
@@ -41,23 +42,26 @@ const Home = () => {
   ];
 
   const changePage = (page_num: number) => {
-    const data = JSON.parse(JSON.stringify(pedidosData));
-    const perPage = 10;
-    const fromPage = 1;
-    const toPage = Math.floor((data.length - 1) / perPage);
-    const random_num = Math.round(Math.random() * 20);
-    console.log(data);
-    console.log(random_num, random_num + perPage);
-    console.log(data.slice((page_num - 1) * perPage, perPage));
-    setPaginationPedido({
-      from: fromPage,
-      data: data.slice(random_num, random_num + perPage),
-      to: toPage,
-      per_page: perPage,
-      current: page_num,
-      prev: page_num  > fromPage ? page_num - 1 : null,
-      next: toPage && page_num + 1  < toPage ? page_num + 1 : null,
-      total: data.length,
+    axios.get("https://testprueba.intecsu.com/restapi/Pagos").then((resp) => {
+      const data = resp.data[0];
+      const perPage = 10;
+      const fromPage = 1;
+      const toPage = Math.floor((data.length - 1) / perPage) + 1;
+
+      setPaginationPedido({
+        from: fromPage,
+        data: data.slice((page_num - 1) * perPage, page_num * perPage),
+        to: toPage,
+        per_page: perPage,
+        current: page_num,
+        prev: page_num > fromPage ? page_num - 1 : null,
+        next: toPage > page_num ? page_num + 1 : null,
+        total: data.length,
+      });
+    }).catch((err) => {
+      console.error(err);
+    }).finally(() => {
+      //
     });
   };
 
@@ -75,7 +79,6 @@ const Home = () => {
         <Breadcrumb pages={pages} />
         <div></div>
         <div className='overflow-auto'>
-
           <table className="table table-bordered">
             <thead className='table-dark'>
               <tr>
@@ -91,16 +94,16 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              {paginationPedido.data.map((pedido) => {
+              {paginationPedido.data.map((pedido: any) => {
                 return (
                   <tr key={pedido.id} style={{ "verticalAlign": "middle" }}>
-                    <td className='fw-bold'>{pedido.user_one}</td>
+                    <td className='fw-bold'>{pedido.nombre_Cliente}</td>
                     <td>{pedido.user_one_ban}</td>
-                    <td>{pedido.amount}</td>
+                    <td>{pedido.monto}</td>
                     <td>{pedido.user_two_ban}</td>
-                    <td className='fw-bold'>{pedido.user_two}</td>
-                    <td>{pedido.description}</td>
-                    <td className='text-center'>{<StatusPedido status={pedido.status} />}</td>
+                    <td className='fw-bold'>{pedido.nombre_Proveedor}</td>
+                    <td>{pedido.tipoProducto}</td>
+                    <td className='text-center'>{<StatusPedido status={pedido.procesoPago} />}</td>
                     <td className='text-center'>
                       <button className='btn btn-warning'>
                         Realizar
@@ -129,14 +132,14 @@ const Home = () => {
                 ) : ""
               }
               {
-                paginationPedido.from && paginationPedido.current > 2 ? (
+                paginationPedido.from && paginationPedido.current > 3 ? (
                   <button className='btn btn-secondary' disabled>
                     ...
                   </button>
                 ) : ""
               }
               {
-                paginationPedido.prev && paginationPedido.prev > paginationPedido.from + 1  ? (
+                paginationPedido.prev && paginationPedido.prev > paginationPedido.from  ? (
                   <button className='btn btn-secondary' onClick={ () => { changePage(paginationPedido.current - 1)} }>
                     { paginationPedido.current - 1 }
                   </button>
@@ -150,7 +153,7 @@ const Home = () => {
                 ) : ""
               }
               {
-                paginationPedido.next ? (
+                paginationPedido.next && paginationPedido.next < paginationPedido.to ? (
                   <button className='btn btn-secondary' onClick={ () => { changePage(paginationPedido.next || 1)} }>
                     { paginationPedido.current + 1 }
                   </button>
